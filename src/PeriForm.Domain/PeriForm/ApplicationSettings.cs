@@ -1,4 +1,4 @@
-﻿namespace PeriForm.Domain.Settings;
+﻿namespace PeriForm.Domain.PeriForm;
 
 /// <summary>
 /// Defines a class that acts as model for the application settings

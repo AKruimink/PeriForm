@@ -1,9 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Input;
 using ControlzEx.Theming;
+using PeriForm.Domain.Automation;
+using PeriForm.Domain.Clicker;
 using PeriForm.Domain.Infrastructure.Messenger;
 using PeriForm.Domain.Infrastructure.Messenger.Events;
+using PeriForm.Domain.PeriForm;
 using PeriForm.Domain.Settings;
 using PeriForm.Infrastructure.Command;
 using PeriForm.Infrastructure.ViewModel;
@@ -15,10 +19,8 @@ namespace PeriForm.Window;
 /// </summary>
 public class WindowViewModel : ViewModelBase, IWindowViewModel
 {
-    ///<inheritdoc/>
     public string Version { get; }
 
-    ///<inheritdoc/>
     public bool MenuIsOpen
     {
         get => _menuIsOpen;
@@ -26,37 +28,68 @@ public class WindowViewModel : ViewModelBase, IWindowViewModel
     }
 
     private bool _menuIsOpen;
-
-    ///<inheritdoc/>
     public bool MinimizeOnClose { get; set; }
 
-    /// <summary>
-    /// <see cref="IEventAggregator"/> used to be notified when the general setting have changed
-    /// </summary>
+    // Status properties for the demo clicker
+    private bool _clickerIsRunning;
+
+    public bool ClickerIsRunning
+    {
+        get => _clickerIsRunning;
+        set => SetProperty(ref _clickerIsRunning, value);
+    }
+
+    private int _clickerExecutedCycles;
+
+    public int ClickerExecutedCycles
+    {
+        get => _clickerExecutedCycles;
+        set => SetProperty(ref _clickerExecutedCycles, value);
+    }
+
     private readonly IEventAggregator _eventAggregator;
 
-    /// <summary>
-    /// Shows the project source code on Github
-    /// </summary>
-    public DelegateCommand ShowSourceOnGithubCommand { get; }
+    public ICommand ShowSourceOnGithubCommand { get; }
+    public ICommand ShowVersionsOnGithubCommand { get; }
 
-    /// <summary>
-    /// Shows the project versions on Github
-    /// </summary>
-    public DelegateCommand ShowVersionsOnGithubCommand { get; }
-
-    /// <summary>
-    /// Create a new instance of the <see cref="WindowViewModel"/>
-    /// </summary>
-    /// <param name="eventAggregator"><see cref="IEventAggregator"/> used to be notified when the general setting have changed</param>
-    /// <param name="applicationSettings"><see cref="ISetting{ApplicationSettings}"/> of the current app settings</param>
-    ///
-    public WindowViewModel(IEventAggregator eventAggregator, ISetting<ApplicationSettings> applicationSettings)
+    public WindowViewModel(
+        IEventAggregator eventAggregator,
+        ISetting<ApplicationSettings> applicationSettings,
+        ISetting<AutoClickerSettings> clickerSettings,
+        AutomationManager automationManager)
     {
         _eventAggregator = eventAggregator ?? throw new ArgumentNullException(nameof(eventAggregator));
-        _eventAggregator.GetEvent<SettingChangedEvent<ApplicationSettings>>().Subscribe(ApplicationSettingsChanged, ThreadOption.UIThread, false);
-        _ = applicationSettings ?? throw new ArgumentNullException(nameof(applicationSettings));
+
+        // Subscribe to application settings changes to update theme etc.
+        _eventAggregator.GetEvent<SettingChangedEvent<ApplicationSettings>>()
+                        .Subscribe(ApplicationSettingsChanged, ThreadOption.UIThread, false);
+        if (applicationSettings == null)
+            throw new ArgumentNullException(nameof(applicationSettings));
         ApplicationSettingsChanged(applicationSettings);
+
+        // Ensure there is at least one clicker config for demonstration
+        if (!clickerSettings.CurrentSetting.AutoClickers.Any())
+        {
+            clickerSettings.CurrentSetting.AutoClickers.Add(new AutoClickerConfig
+            {
+                Name = "DemoClicker",
+                StartHotKey = "F6",
+                StopHotKey = "F7",
+                ClickInterval = TimeSpan.FromSeconds(1)
+            });
+            clickerSettings.Save();
+        }
+
+        // Subscribe to automation status updates
+        _eventAggregator.GetEvent<AutomationStatusChangedEvent>()
+                        .Subscribe(status =>
+                        {
+                            if (status.Name == "DemoClicker")
+                            {
+                                ClickerIsRunning = status.IsRunning;
+                                ClickerExecutedCycles = status.ExecutedCycles;
+                            }
+                        }, ThreadOption.UIThread);
 
         // Setup commands
         Version = $"v:{Assembly.GetEntryAssembly()?.GetName()?.Version?.ToString(3)}";
@@ -80,9 +113,6 @@ public class WindowViewModel : ViewModelBase, IWindowViewModel
         });
     }
 
-    /// <summary>
-    /// Invoked when the general application settings have changed
-    /// </summary>
     private void ApplicationSettingsChanged(ISetting<ApplicationSettings> settings)
     {
         if (settings.CurrentSetting != null)
@@ -92,17 +122,12 @@ public class WindowViewModel : ViewModelBase, IWindowViewModel
         }
     }
 
-    /// <summary>
-    /// Updates the current application theme
-    /// </summary>
-    /// <param name="useDarkTheme">Indicates if the current theme should be <see cref="ThemeManager.BaseColorDark"/></param>
     private void UpdateTheme(bool useDarkTheme)
     {
         var themeName = useDarkTheme ? ThemeManager.BaseColorDark : ThemeManager.BaseColorLight;
-
-        if (ThemeManager.Current.DetectTheme()?.BaseColorScheme != themeName && Application.Current != null)
+        if (ThemeManager.Current.DetectTheme()?.BaseColorScheme != themeName && System.Windows.Application.Current != null)
         {
-            ThemeManager.Current.ChangeThemeBaseColor(Application.Current, themeName);
+            ThemeManager.Current.ChangeThemeBaseColor(System.Windows.Application.Current, themeName);
         }
     }
 }

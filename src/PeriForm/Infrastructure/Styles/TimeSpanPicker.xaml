@@ -1,0 +1,100 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                    xmlns:controls="clr-namespace:PeriForm.Infrastructure.Controls">
+
+    <!-- TimeSpanPicker default style -->
+    <Style TargetType="{x:Type controls:TimeSpanPicker}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:TimeSpanPicker}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- HOURS -->
+                        <mah:NumericUpDown Grid.Column="0"
+                                           Minimum="0"
+                                           Maximum="{TemplateBinding MaxHours}"
+                                           Interval="1"
+                                           HideUpDownButtons="True"
+                                           InterceptArrowKeys="True"
+                                           InterceptMouseWheel="True"
+                                           HorizontalContentAlignment="Center"
+                                           Value="{Binding Hours, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           StringFormat="00"
+                                           Width="48"
+                                           Padding="4,0" />
+
+                        <!-- : -->
+                        <TextBlock Grid.Column="1"
+                                   VerticalAlignment="Center"
+                                   Margin="2,0"
+                                   Text=":" />
+
+                        <!-- MINUTES -->
+                        <mah:NumericUpDown Grid.Column="2"
+                                           Minimum="0"
+                                           Maximum="59"
+                                           Interval="1"
+                                           HideUpDownButtons="True"
+                                           InterceptArrowKeys="True"
+                                           InterceptMouseWheel="True"
+                                           HorizontalContentAlignment="Center"
+                                           Value="{Binding Minutes, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           StringFormat="00"
+                                           Width="48"
+                                           Padding="4,0" />
+
+                        <!-- : -->
+                        <TextBlock Grid.Column="3"
+                                   VerticalAlignment="Center"
+                                   Margin="2,0"
+                                   Text=":" />
+
+                        <!-- SECONDS -->
+                        <mah:NumericUpDown Grid.Column="4"
+                                           Minimum="0"
+                                           Maximum="59"
+                                           Interval="1"
+                                           HideUpDownButtons="True"
+                                           InterceptArrowKeys="True"
+                                           InterceptMouseWheel="True"
+                                           HorizontalContentAlignment="Center"
+                                           Value="{Binding Seconds, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           StringFormat="00"
+                                           Width="48"
+                                           Padding="4,0" />
+
+                        <!-- . -->
+                        <TextBlock Grid.Column="5"
+                                   VerticalAlignment="Center"
+                                   Margin="2,0"
+                                   Text="." />
+
+                        <!-- MILLISECONDS -->
+                        <mah:NumericUpDown Grid.Column="6"
+                                           Minimum="0"
+                                           Maximum="999"
+                                           Interval="1"
+                                           HideUpDownButtons="True"
+                                           InterceptArrowKeys="True"
+                                           InterceptMouseWheel="True"
+                                           HorizontalContentAlignment="Center"
+                                           Value="{Binding Milliseconds, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           StringFormat="000"
+                                           Width="64"
+                                           Padding="4,0" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

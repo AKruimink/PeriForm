@@ -1,7 +1,12 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using PeriForm.Domain.Automation;
+using PeriForm.Domain.Clicker;
+using PeriForm.Domain.Hotkey;
 using PeriForm.Domain.Infrastructure.Messenger;
+using PeriForm.Domain.PeriForm;
 using PeriForm.Domain.Settings;
+using PeriForm.Domain.WinApi;
 using PeriForm.Infrastructure.ViewModel;
 
 namespace PeriForm.Infrastructure.Extensions;
@@ -28,13 +33,26 @@ public static class ServiceCollectionExtensions
     /// </summary>
     private static void RegisterDomainDependencies(IServiceCollection services)
     {
-        // Events
+        // Event aggregator
         services.AddSingleton<IEventAggregator, EventAggregator>();
 
-        // Settings
+        // WinAPI abstraction and hot‑key service
+        services.AddSingleton<IWinApiService, WinApiService>();
+        services.AddSingleton<IHotKeyService, HotKeyService>();
+
+        // Settings infrastructure
         services.AddTransient<ISettingStore, SettingStore>();
         services.AddSingleton<ISettingFactory, SettingFactory>();
+
+        // Application-wide settings
         services.AddSingleton(sp => sp.GetRequiredService<ISettingFactory>().Create<ApplicationSettings>());
+        // Automation settings for each type (clicker, mover, typer)
+        services.AddSingleton(sp => sp.GetRequiredService<ISettingFactory>().Create<AutoClickerSettings>());
+        //services.AddSingleton(sp => sp.GetRequiredService<ISettingFactory>().Create<AutoMoverSettings>());
+        //services.AddSingleton(sp => sp.GetRequiredService<ISettingFactory>().Create<AutoTyperSettings>());
+
+        // Automation manager
+        services.AddSingleton<AutomationManager>();
     }
 
     /// <summary>

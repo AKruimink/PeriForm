@@ -30,6 +30,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/PeriForm;component/Infrastructure/Styles/ToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/PeriForm;component/Infrastructure/Styles/TimeSpanPicker.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <SolidColorBrush x:Key="Splitview.Overlay" Opacity="0.7" Color="{DynamicResource MahApps.Colors.ThemeForeground}" />
@@ -115,28 +116,55 @@
         <mah:SplitView.Content>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="2*" />
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
+                <!-- Status bar -->
+                <StackPanel Orientation="Horizontal"
+                Grid.Row="0"
+                Margin="10,5">
+                    <TextBlock Text="Demo clicker running: " />
+                    <TextBlock Text="{Binding ClickerIsRunning}" Margin="0,0,10,0" />
+                    <TextBlock Text="Executed cycles: " />
+                    <TextBlock Text="{Binding ClickerExecutedCycles}" />
+                </StackPanel>
+
                 <mah:MetroTabControl Grid.Row="1"
+                         Margin="0 5 0 5"
+                         KeepVisualTreeInMemoryWhenChangingTabs="True"
+                         mah:TabControlHelper.Underlined="TabPanel">
+                    <!-- existing tab items -->
+                </mah:MetroTabControl>
+            </Grid>
+
+            <!--<Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <mah:MetroTabControl Grid.Row="0"
                                      Margin="0 5 0 5"
                                      KeepVisualTreeInMemoryWhenChangingTabs="True"
                                      mah:TabControlHelper.Underlined="TabPanel">
                     <mah:MetroTabItem Header="Clicker"
                                       mah:HeaderedControlHelper.HeaderFontSize="18">
-                        <!--<resizer:ResizerView />-->
+                        <clicker:ClickerConfigView />
                     </mah:MetroTabItem>
                     <mah:MetroTabItem Header="Mover"
                                       mah:HeaderedControlHelper.HeaderFontSize="18">
-                        <!--<resizer:ResizerView />-->
+                        -->
+            <!--<resizer:ResizerView />-->
+            <!--
                     </mah:MetroTabItem>
                     <mah:MetroTabItem Header="Typer"
                                       mah:HeaderedControlHelper.HeaderFontSize="18">
-                        <!--<resizer:ResizerView />-->
+                        -->
+            <!--<resizer:ResizerView />-->
+            <!--
                     </mah:MetroTabItem>
                 </mah:MetroTabControl>
-            </Grid>
+            </Grid>-->
         </mah:SplitView.Content>
     </mah:SplitView>
 </mah:MetroWindow>
