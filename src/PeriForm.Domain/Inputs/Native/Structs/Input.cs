@@ -4,8 +4,8 @@ using PeriForm.Domain.Inputs.Native.Enums;
 namespace PeriForm.Domain.Inputs.Native.Structs;
 
 /// <summary>
-/// Defines the <c>INPUT</c> structure used by the <see cref="NativeMethods.SendInput"/> function.
-/// This is a tagged union that can represent either a mouse, keyboard or hardware input event.
+/// Defines the structure used to send mouse, keyboard or hardware input via <see cref="NativeMethods.SendInput"/>.
+/// Only one of the union fields is valid depending on <see cref="Type"/>.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 internal struct Input
@@ -13,26 +13,37 @@ internal struct Input
     /// <summary>
     /// Specifies the type of input.
     /// </summary>
-    public InputType type;
+    public InputType Type;
 
     /// <summary>
-    /// Holds the event data for this input.  Only one of the fields will be valid
-    /// depending on the value of <see cref="type"/>.
+    /// Contains the event data for the input.
     /// </summary>
-    public InputUnion U;
+    public InputUnion Data;
 
     /// <summary>
-    /// Helper property to access the <see cref="MouseInput"/> view of the union.
+    /// Shortcut to the <see cref="MouseInput"/> view of the union.
     /// </summary>
-    public MouseInput mi => U.mi;
+    public MouseInput Mouse
+    {
+        get => Data.Mouse;
+        set => Data.Mouse = value;
+    }
 
     /// <summary>
-    /// Helper property to access the <see cref="KeyboardInput"/> view of the union.
+    /// Shortcut to the <see cref="KeyboardInput"/> view of the union.
     /// </summary>
-    public KeyboardInput ki => U.ki;
+    public KeyboardInput Keyboard
+    {
+        get => Data.Keyboard;
+        set => Data.Keyboard = value;
+    }
 
     /// <summary>
-    /// Helper property to access the <see cref="HardwareInput"/> view of the union.
+    /// Shortcut to the <see cref="HardwareInput"/> view of the union.
     /// </summary>
-    public HardwareInput hi => U.hi;
+    public HardwareInput Hardware
+    {
+        get => Data.Hardware;
+        set => Data.Hardware = value;
+    }
 }

@@ -1,0 +1,276 @@
+﻿<UserControl x:Class="PeriForm.Clickers.ClickerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:PeriForm.Clickers"
+             xmlns:enums="clr-namespace:PeriForm.Domain.Infrastructure.Enums;assembly=PeriForm.Domain"
+             xmlns:inputs="clr-namespace:PeriForm.Domain.Inputs.Enums;assembly=PeriForm.Domain"
+             xmlns:converters="clr-namespace:PeriForm.Infrastructure.Converters"
+             xmlns:viewModel="clr-namespace:PeriForm.Infrastructure.ViewModel"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance local:ClickerDesignModel, IsDesignTimeCreatable=True}"
+             viewModel:ViewModelLocator.WireViewModel="{x:Type local:ClickerViewModel}">
+
+    <UserControl.Resources>
+        <!-- Enum providers -->
+        <ObjectDataProvider x:Key="RunModesProvider" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:RunMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="MouseButtonsProvider" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="inputs:MouseButton" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <!-- Enum display converter -->
+        <converters:EnumDisplayNameConverter x:Key="EnumDisplayNameConverter" />
+
+        <!-- Base styles -->
+        <Style x:Key="FormRow" TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+
+        <Style x:Key="FormLabel" TargetType="Label">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+
+        <!-- Derived conditional row styles -->
+        <Style x:Key="FormRow.ExecutionCount" TargetType="Grid" BasedOn="{StaticResource FormRow}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RunMode}" Value="{x:Static enums:RunMode.ExecutionCount}">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FormRow.Duration" TargetType="Grid" BasedOn="{StaticResource FormRow}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <!-- FIX: use the same enum type as RunMode -->
+                <DataTrigger Binding="{Binding RunMode}" Value="{x:Static enums:RunMode.Duration}">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FormRow.PositionXY" TargetType="Grid" BasedOn="{StaticResource FormRow}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding UseFixedPosition}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Content="Add Clicker"
+                Width="120"
+                Margin="0,0,0,8"
+                Command="{Binding AddNewCommand}"
+                HorizontalAlignment="Left" />
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Clickers}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Expander IsExpanded="True" Margin="0,0,0,10">
+                            <Expander.Header>
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Left">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text">
+                                                    <Setter.Value>
+                                                        <!-- NOTE: {3:c} is currency; if Interval is a timespan/number of ms, consider fixing the format -->
+                                                        <MultiBinding StringFormat="{}{0} — {1} — {2} — {3:c}">
+                                                            <Binding Path="Name" />
+                                                            <Binding Path="Button" Converter="{StaticResource EnumDisplayNameConverter}" />
+                                                            <Binding Path="RunMode" Converter="{StaticResource EnumDisplayNameConverter}" />
+                                                            <Binding Path="Interval" />
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Name}" Value="">
+                                                        <Setter Property="Text">
+                                                            <Setter.Value>
+                                                                <MultiBinding StringFormat="{}(unnamed) — {0} — {1} — {2:c}">
+                                                                    <Binding Path="Button" Converter="{StaticResource EnumDisplayNameConverter}" />
+                                                                    <Binding Path="RunMode" Converter="{StaticResource EnumDisplayNameConverter}" />
+                                                                    <Binding Path="Interval" />
+                                                                </MultiBinding>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Setter Property="Opacity" Value="0.8" />
+                                                        <Setter Property="FontStyle" Value="Italic" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <Button Content="Delete"
+                                            DockPanel.Dock="Right"
+                                            Margin="8,0,0,0"
+                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </DockPanel>
+                            </Expander.Header>
+
+                            <Border>
+                                <StackPanel>
+
+                                    <!-- Name -->
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Name" Style="{StaticResource FormLabel}" />
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </Grid>
+
+                                    <!-- Button -->
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Button" Style="{StaticResource FormLabel}" />
+                                        <ComboBox Grid.Column="1"
+                                                  ItemsSource="{Binding Source={StaticResource MouseButtonsProvider}}"
+                                                  SelectedItem="{Binding Button, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayNameConverter}}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+
+                                    <!-- Interval -->
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Interval" Style="{StaticResource FormLabel}" />
+                                        <TextBox Grid.Column="1" Text="{Binding Interval, Mode=TwoWay}" />
+                                    </Grid>
+
+                                    <!-- Hold Duration -->
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Hold Duration" Style="{StaticResource FormLabel}" />
+                                        <TextBox Grid.Column="1" Text="{Binding HoldDuration, Mode=TwoWay}" />
+                                    </Grid>
+
+                                    <!-- Run Mode -->
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Run Mode" Style="{StaticResource FormLabel}" />
+                                        <ComboBox Grid.Column="1"
+                                                  ItemsSource="{Binding Source={StaticResource RunModesProvider}}"
+                                                  SelectedItem="{Binding RunMode, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Converter={StaticResource EnumDisplayNameConverter}}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+
+                                    <!-- Execution Count -->
+                                    <Grid Style="{StaticResource FormRow.ExecutionCount}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Execution Count" Style="{StaticResource FormLabel}" />
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding MaxClicks, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </Grid>
+
+                                    <!-- Duration -->
+                                    <Grid Style="{StaticResource FormRow.Duration}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Duration" Style="{StaticResource FormLabel}" />
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding MaxDuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </Grid>
+
+                                    <!-- Fixed Position -->
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Fixed Position" Style="{StaticResource FormLabel}" />
+                                        <CheckBox Grid.Column="1" IsChecked="{Binding UseFixedPosition, Mode=TwoWay}" />
+                                    </Grid>
+
+                                    <!-- Position X/Y (only when fixed) -->
+                                    <Grid Style="{StaticResource FormRow.PositionXY}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Position X" Style="{StaticResource FormLabel}" />
+                                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                            <TextBox Width="80" Text="{Binding PositionX, Mode=TwoWay}" Margin="0,0,8,0" />
+                                            <Label Content="Y" VerticalAlignment="Center" Margin="8,0,8,0" />
+                                            <TextBox Width="80" Text="{Binding PositionY, Mode=TwoWay}" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Hotkeys -->
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Start Hotkey" Style="{StaticResource FormLabel}" />
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding StartHotkey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </Grid>
+
+                                    <Grid Style="{StaticResource FormRow}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Stop Hotkey" Style="{StaticResource FormLabel}" />
+                                        <TextBox Grid.Column="1"
+                                                 Text="{Binding StopHotkey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

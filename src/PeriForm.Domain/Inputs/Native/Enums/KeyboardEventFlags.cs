@@ -1,38 +1,32 @@
-﻿using PeriForm.Domain.Inputs.Native.Structs;
-
-namespace PeriForm.Domain.Inputs.Native.Enums;
+﻿namespace PeriForm.Domain.Inputs.Native.Enums;
 
 /// <summary>
-/// Flags for keyboard events used with <see cref="KeyboardInput.dwFlags"/>.
-/// Values correspond to the KEYEVENTF_* constants in WinUser.h.
+/// Flags for keyboard events used with the native <c>KeyboardInput.Flags</c> field.
+/// These values correspond to the KEYEVENTF_* constants defined in WinUser.h.
 /// </summary>
 [Flags]
 internal enum KeyboardEventFlags : uint
 {
     /// <summary>
-    /// If specified, scan code was preceded by a prefix byte.
+    /// If specified, the scan code was preceded by a prefix byte (0xE0 or 0xE1).
     /// </summary>
     ExtendedKey = 0x0001,
 
     /// <summary>
-    /// Key up event.  If not specified, the event is key down.
+    /// If specified, the key is being released.
+    /// If not specified, the key is being pressed.
     /// </summary>
     KeyUp = 0x0002,
 
     /// <summary>
-    /// System key event (used for Alt keys).
+    /// Uses the scan code.
+    /// If not set, the virtual key code is used.
     /// </summary>
-    Alt = 0x0004,
+    Scancode = 0x0008,
 
     /// <summary>
-    /// Unicode key.
-    /// If specified, wScan identifies the Unicode character and wVk is ignored.
+    /// Specifies a Unicode character, the scan code member identifies the Unicode character.
+    /// When this flag is set, the virtual key code should be zero.
     /// </summary>
-    Unicode = 0x0004,
-
-    /// <summary>
-    /// Use the scan code.
-    /// If not set, wVk is used.
-    /// </summary>
-    Scancode = 0x0008
+    Unicode = 0x0004
 }

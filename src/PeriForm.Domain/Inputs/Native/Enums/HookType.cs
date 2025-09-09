@@ -1,15 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PeriForm.Domain.Inputs.Native.Enums;
+﻿namespace PeriForm.Domain.Inputs.Native.Enums;
 
 /// <summary>
-/// Contains constants representing low-level Windows hook types (see WinUser.h).
+/// Specifies the type of low‑level hook to install using SetWindowsHookEx.
+/// Values correspond to the WH_* constants defined in WinUser.h.
 /// </summary>
-internal enum HookType : int
+internal enum HookType
 {
-    [Display(Name = "Low-Level Keyboard Hook")]
-    WH_KEYBOARD_LL = 13,
+    /// <summary>
+    /// Installs a low‑level keyboard hook that monitors keyboard input events.
+    /// </summary>
+    LowLevelKeyboard = 13,
 
-    [Display(Name = "Low-Level Mouse Hook")]
-    WH_MOUSE_LL = 14
+    /// <summary>
+    /// Installs a low‑level mouse hook that monitors mouse input events.
+    /// </summary>
+    LowLevelMouse = 14
 }

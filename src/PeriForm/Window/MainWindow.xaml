@@ -4,6 +4,7 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:clickers="clr-namespace:PeriForm.Clickers"
                  xmlns:viewModel="clr-namespace:PeriForm.Infrastructure.ViewModel"
                  xmlns:settings="clr-namespace:PeriForm.Settings"
                  xmlns:local="clr-namespace:PeriForm.Window"
@@ -115,8 +116,7 @@
         <mah:SplitView.Content>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="2*" />
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <mah:MetroTabControl Grid.Row="1"
@@ -125,11 +125,11 @@
                                      mah:TabControlHelper.Underlined="TabPanel">
                     <mah:MetroTabItem Header="Clicker"
                                       mah:HeaderedControlHelper.HeaderFontSize="18">
-                        <!--<resizer:ResizerView />-->
+                        <clickers:ClickerView />
                     </mah:MetroTabItem>
                     <mah:MetroTabItem Header="Mover"
                                       mah:HeaderedControlHelper.HeaderFontSize="18">
-                        <!--<resizer:ResizerView />-->
+                        <!--<clickers:ClickerView />-->
                     </mah:MetroTabItem>
                     <mah:MetroTabItem Header="Typer"
                                       mah:HeaderedControlHelper.HeaderFontSize="18">

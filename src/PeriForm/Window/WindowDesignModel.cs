@@ -20,7 +20,7 @@ public class WindowDesignModel : IWindowViewModel
     public WindowDesignModel()
     {
         Version = $"v0.0.0";
-        MenuIsOpen = true;
+        MenuIsOpen = false;
         MinimizeOnClose = false;
     }
 }

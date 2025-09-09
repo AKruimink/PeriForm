@@ -1,17 +1,15 @@
-﻿using PeriForm.Domain.Inputs.Native.Structs;
-
-namespace PeriForm.Domain.Inputs.Native.Enums;
+﻿namespace PeriForm.Domain.Inputs.Native.Enums;
 
 /// <summary>
-/// Flags for mouse events used with <see cref="MouseInput.dwFlags"/>.
-/// Values correspond to the MOUSEEVENTF_* constants in WinUser.h.
+/// Flags for mouse events used with the native <c>MouseInput.dwFlags</c> field.
+/// These values correspond to the MOUSEEVENTF_* constants defined in WinUser.h.
 /// </summary>
 [Flags]
 internal enum MouseEventFlags : uint
 {
     /// <summary>
     /// Movement occurred.
-    /// Combine with absolute flags to specify absolute coordinates.
+    /// Combine with Absolute to specify absolute coordinates.
     /// </summary>
     Move = 0x0001,
 
@@ -47,19 +45,19 @@ internal enum MouseEventFlags : uint
 
     /// <summary>
     /// X button down.
-    /// When used, set <see cref="MouseInput.mouseData"/> to 1 for XButton1 or 2 for XButton2.
+    /// When used, set <c>MouseInput.MouseData</c> to 1 for XButton1 or 2 for XButton2.
     /// </summary>
     XDown = 0x0080,
 
     /// <summary>
     /// X button up.
-    /// When used, set <see cref="MouseInput.mouseData"/> to 1 for XButton1 or 2 for XButton2.
+    /// When used, set <c>MouseInput.MouseData</c> to 1 for XButton1 or 2 for XButton2.
     /// </summary>
     XUp = 0x0100,
 
     /// <summary>
     /// The wheel was moved.
-    /// The amount of movement is specified in <see cref="MouseInput.mouseData"/>.
+    /// The amount of movement is specified in <c>MouseInput.MouseData</c>.
     /// </summary>
     Wheel = 0x0800,
 

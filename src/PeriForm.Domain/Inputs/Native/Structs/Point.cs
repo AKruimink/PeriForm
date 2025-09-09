@@ -3,12 +3,18 @@
 namespace PeriForm.Domain.Inputs.Native.Structs;
 
 /// <summary>
-/// Represents a point (x,y) coordinate.  Used for retrieving the current cursor position.
+/// Represents a point (x,y) coordinate in screen space.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-internal struct Point
+internal struct Point(int x, int y)
 {
-    public int x;
+    /// <summary>
+    /// The x‑coordinate.
+    /// </summary>
+    public int X = x;
 
-    public int y;
+    /// <summary>
+    /// The y‑coordinate.
+    /// </summary>
+    public int Y = y;
 }

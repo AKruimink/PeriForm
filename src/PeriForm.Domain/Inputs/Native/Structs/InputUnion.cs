@@ -3,17 +3,17 @@
 namespace PeriForm.Domain.Inputs.Native.Structs;
 
 /// <summary>
-/// Represents the union portion of the <see cref="INPUT"/> structure.
+/// Represents the union portion of the <see cref="Input"/> structure.
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
 internal struct InputUnion
 {
     [FieldOffset(0)]
-    public MouseInput mi;
+    public MouseInput Mouse;
 
     [FieldOffset(0)]
-    public KeyboardInput ki;
+    public KeyboardInput Keyboard;
 
     [FieldOffset(0)]
-    public HardwareInput hi;
+    public HardwareInput Hardware;
 }
